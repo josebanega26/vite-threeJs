@@ -15,24 +15,12 @@ const geometry1 = new THREE.BoxGeometry(1, 1, 1);
 const material1 = new THREE.MeshBasicMaterial({ color: 0xd04030 });
 const cube1 = new THREE.Mesh(geometry1, material1);
 cube1.position.random();
-// * * Cube B
-const geometry2 = new THREE.BoxGeometry(1, 2, 1);
-const material2 = new THREE.MeshBasicMaterial({ color: 0xd44a385 });
-const cube2 = new THREE.Mesh(geometry2, material2);
-cube2.position.random();
-
-// * * Add group
-
-group.add(cube1);
-group.add(cube2);
 
 // ** Add Scene
 
-scene.add(group);
+scene.add(cube1);
 
-group.translateX(2);
-group.rotation.x = PI / 2;
-group.rotation.z = PI / 2;
+cube1.translateX(2);
 
 // * * Axes Helper
 
@@ -49,7 +37,7 @@ const sizes = {
 //* * Camera
 const camera = new THREE.PerspectiveCamera(45, sizes.width / sizes.height);
 camera.position.z = 10;
-camera.position.x = 5;
+camera.position.x = 1;
 scene.add(camera);
 
 //* *Renderer
@@ -57,4 +45,25 @@ const renderer = new THREE.WebGLRenderer({
   canvas,
 });
 renderer.setSize(sizes.width, sizes.height);
-renderer.render(scene, camera);
+
+// * * Time
+
+let time = Date.now();
+// * * Animations
+
+const tick = () => {
+  const currentTime = Date.now();
+  const delta = currentTime - time;
+  time = currentTime;
+  // * * Update cube
+  cube1.rotation.x += 0.001 * delta;
+  cube1.rotation.y += 0.001 * delta;
+  // cube1.rotation.z += 0.01;
+  // camera.position.z -= 0.01;
+
+  // Render
+  renderer.render(scene, camera);
+  window.requestAnimationFrame(tick);
+};
+
+tick();
