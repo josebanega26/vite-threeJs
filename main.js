@@ -1,6 +1,8 @@
 import "./style.css";
 import * as THREE from "three";
 const { PI } = Math;
+import gsap from "gsap";
+
 //* * Canvas
 const canvas = document.querySelector(".webgl");
 //* * Scene
@@ -48,18 +50,22 @@ renderer.setSize(sizes.width, sizes.height);
 
 // * * Time
 
-let time = Date.now();
+// let time = Date.now();
+const clock = new THREE.Clock();
 // * * Animations
 
 const tick = () => {
-  const currentTime = Date.now();
-  const delta = currentTime - time;
-  time = currentTime;
+  //
+  const elapsedTime = clock.getElapsedTime();
+  console.log(`elapsedTime`, elapsedTime);
   // * * Update cube
-  cube1.rotation.x += 0.001 * delta;
-  cube1.rotation.y += 0.001 * delta;
+  // cube1.position.x = Math.sin(elapsedTime);
+  // cube1.position.z = Math.cos(elapsedTime);
+  // cube1.position.z = Math.tan(elapsedTime);
   // cube1.rotation.z += 0.01;
-  // camera.position.z -= 0.01;
+  camera.position.x = Math.sin(elapsedTime);
+  camera.position.y = Math.sin(elapsedTime);
+  camera.lookAt(cube1.position);
 
   // Render
   renderer.render(scene, camera);
