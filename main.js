@@ -1,10 +1,27 @@
 import "./style.css";
 import * as THREE from "three";
+import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
 const { PI } = Math;
-import gsap from "gsap";
 
+console.log(`OrbitControls`, OrbitControls);
+const sizes = {
+  width: 800,
+  height: 400,
+};
+
+const cursor = {
+  x: 0,
+  y: 0,
+};
 //* * Canvas
 const canvas = document.querySelector(".webgl");
+
+const mousemouve = addEventListener("mousemove", ({ x, y }) => {
+  cursor.x = x / sizes.width - 0.5;
+  cursor.y = 0.5 - y / sizes.height;
+  console.table(`event`, [cursor.x, cursor.y]);
+});
+
 //* * Scene
 const scene = new THREE.Scene();
 // Group
@@ -16,32 +33,28 @@ const group = new THREE.Group();
 const geometry1 = new THREE.BoxGeometry(1, 1, 1);
 const material1 = new THREE.MeshBasicMaterial({ color: 0xd04030 });
 const cube1 = new THREE.Mesh(geometry1, material1);
-cube1.position.random();
 
 // ** Add Scene
 
 scene.add(cube1);
 
-cube1.translateX(2);
-
-// * * Axes Helper
-
-const axesHelper = new THREE.AxesHelper(10);
-scene.add(axesHelper);
-
 //* * Sizes
-
-const sizes = {
-  width: 800,
-  height: 400,
-};
 
 //* * Camera
 const camera = new THREE.PerspectiveCamera(45, sizes.width / sizes.height);
-camera.position.z = 10;
-camera.position.x = 1;
+camera.position.z = 5;
 scene.add(camera);
 
+// ** Controls
+
+const controls = new OrbitControls(camera, canvas);
+controls.enableDamping = true;
+controls.keys = {
+  LEFT: "ArrowLeft", //left arrow
+  UP: "ArrowUp", // up arrow
+  RIGHT: "ArrowRight", // right arrow
+  BOTTOM: "ArrowDown", // down arrow
+};
 //* *Renderer
 const renderer = new THREE.WebGLRenderer({
   canvas,
@@ -57,16 +70,13 @@ const clock = new THREE.Clock();
 const tick = () => {
   //
   const elapsedTime = clock.getElapsedTime();
-  console.log(`elapsedTime`, elapsedTime);
-  // * * Update cube
-  // cube1.position.x = Math.sin(elapsedTime);
-  // cube1.position.z = Math.cos(elapsedTime);
-  // cube1.position.z = Math.tan(elapsedTime);
-  // cube1.rotation.z += 0.01;
-  camera.position.x = Math.sin(elapsedTime);
-  camera.position.y = Math.sin(elapsedTime);
-  camera.lookAt(cube1.position);
 
+  // camera.position.x = Math.cos(cursor.x * PI * 2) * 5;
+  // camera.position.z = Math.sin(cursor.x * PI * 2) * 5;
+  // camera.position.y = cursor.y * 10;
+  // camera.lookAt(cube1.position);
+  //Update controls
+  controls.update();
   // Render
   renderer.render(scene, camera);
   window.requestAnimationFrame(tick);
