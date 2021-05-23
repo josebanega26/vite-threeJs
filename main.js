@@ -3,10 +3,9 @@ import * as THREE from "three";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
 const { PI } = Math;
 
-console.log(`OrbitControls`, OrbitControls);
 const sizes = {
-  width: 800,
-  height: 400,
+  width: window.innerWidth,
+  height: window.innerHeight,
 };
 
 const cursor = {
@@ -19,14 +18,29 @@ const canvas = document.querySelector(".webgl");
 const mousemouve = addEventListener("mousemove", ({ x, y }) => {
   cursor.x = x / sizes.width - 0.5;
   cursor.y = 0.5 - y / sizes.height;
-  console.table(`event`, [cursor.x, cursor.y]);
+  //** Update camera
+});
+
+const resize = addEventListener("resize", (event) => {
+  sizes.width = window.innerWidth;
+  sizes.height = window.innerHeight;
+  camera.aspect = sizes.width / sizes.height;
+  camera.updateProjectionMatrix();
+  renderer.setSize(sizes.width, sizes.height);
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+});
+
+const dbclick = addEventListener("dblclick", (event) => {
+  if (!document.fullscreenElement) {
+    canvas.requestFullscreen();
+  } else {
+    document.exitFullscreen();
+  }
 });
 
 //* * Scene
 const scene = new THREE.Scene();
 // Group
-
-const group = new THREE.Group();
 
 // * * Cube A
 
@@ -49,17 +63,14 @@ scene.add(camera);
 
 const controls = new OrbitControls(camera, canvas);
 controls.enableDamping = true;
-controls.keys = {
-  LEFT: "ArrowLeft", //left arrow
-  UP: "ArrowUp", // up arrow
-  RIGHT: "ArrowRight", // right arrow
-  BOTTOM: "ArrowDown", // down arrow
-};
+
 //* *Renderer
 const renderer = new THREE.WebGLRenderer({
   canvas,
 });
 renderer.setSize(sizes.width, sizes.height);
+
+renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
 
 // * * Time
 
