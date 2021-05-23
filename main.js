@@ -15,7 +15,7 @@ const cursor = {
 //* * Canvas
 const canvas = document.querySelector(".webgl");
 
-const mousemouve = addEventListener("mousemove", ({ x, y }) => {
+const mousemove = addEventListener("mousemove", ({ x, y }) => {
   cursor.x = x / sizes.width - 0.5;
   cursor.y = 0.5 - y / sizes.height;
   //** Update camera
@@ -44,9 +44,29 @@ const scene = new THREE.Scene();
 
 // * * Cube A
 
-const geometry1 = new THREE.BoxGeometry(1, 1, 1);
-const material1 = new THREE.MeshBasicMaterial({ color: 0xd04030 });
-const cube1 = new THREE.Mesh(geometry1, material1);
+// const geometry1 = new THREE.BoxGeometry(1, 1, 1, 3, 4, 1);
+
+// ! Crazy triangles
+const counter = 20;
+const arrayOfpoints = [];
+for (let i = 0; i < counter * 3 * 3; i++) {
+  arrayOfpoints.push((Math.random() - 0.5) * 5);
+}
+console.log(`arrayOfpoints`, arrayOfpoints);
+//  * * Geometry
+
+const positionsArray = new Float32Array(arrayOfpoints);
+
+const positionsAttribute = new THREE.BufferAttribute(positionsArray, 3);
+
+const geometry = new THREE.BufferGeometry();
+geometry.setAttribute("position", positionsAttribute);
+
+const material1 = new THREE.MeshBasicMaterial({
+  color: 0xd04030,
+  wireframe: true,
+});
+const cube1 = new THREE.Mesh(geometry, material1);
 
 // ** Add Scene
 
