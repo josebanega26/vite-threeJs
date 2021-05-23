@@ -1,7 +1,26 @@
 import "./style.css";
 import * as THREE from "three";
+import * as dat from "dat.gui";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
+import gsap from "gsap";
 const { PI } = Math;
+
+// * * Create GUI
+
+const gui = new dat.GUI();
+const parameters = {
+  color: 0xddd1a7,
+  spin: () => {
+    gsap.to(mesh.rotation, { duration: 2, y: mesh.rotation.y + PI * 2 });
+  },
+  spinCamera: () => {
+    gsap.to(camera.position, {
+      duration: 1,
+      x: Math.cos(camera.position.x + PI * 2) * 5,
+      // z: Math.cos(camera.position.z + PI * 2) * 5,
+    });
+  },
+};
 
 const sizes = {
   width: window.innerWidth,
@@ -44,35 +63,35 @@ const scene = new THREE.Scene();
 
 // * * Cube A
 
-// const geometry1 = new THREE.BoxGeometry(1, 1, 1, 3, 4, 1);
+const geometry = new THREE.BoxGeometry(1, 1, 1);
 
 // ! Crazy triangles
-const counter = 20;
-const arrayOfpoints = [];
-for (let i = 0; i < counter * 3 * 3; i++) {
-  arrayOfpoints.push((Math.random() - 0.5) * 5);
-}
-console.log(`arrayOfpoints`, arrayOfpoints);
+// const counter = 20;
+// const arrayOfpoints = [];
+// for (let i = 0; i < counter * 3 * 3; i++) {
+//   arrayOfpoints.push((Math.random() - 0.5) * 5);
+// }
+// const positionsArray = new Float32Array(arrayOfpoints);
+
+// const positionsAttribute = new THREE.BufferAttribute(positionsArray, 3);
+
+// const geometry = new THREE.BufferGeometry();
+// geometry.setAttribute("position", positionsAttribute);
+
 //  * * Geometry
 
-const positionsArray = new Float32Array(arrayOfpoints);
-
-const positionsAttribute = new THREE.BufferAttribute(positionsArray, 3);
-
-const geometry = new THREE.BufferGeometry();
-geometry.setAttribute("position", positionsAttribute);
-
-const material1 = new THREE.MeshBasicMaterial({
-  color: 0xd04030,
-  wireframe: true,
+const material = new THREE.MeshBasicMaterial({
+  color: parameters.color,
+  // wireframe: true,
 });
-const cube1 = new THREE.Mesh(geometry, material1);
+const mesh = new THREE.Mesh(geometry, material);
 
 // ** Add Scene
 
-scene.add(cube1);
-
-//* * Sizes
+scene.add(mesh);
+mesh.ma;
+const axesHelper = new THREE.AxesHelper(20);
+scene.add(axesHelper);
 
 //* * Camera
 const camera = new THREE.PerspectiveCamera(45, sizes.width / sizes.height);
@@ -97,6 +116,21 @@ renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
 // let time = Date.now();
 const clock = new THREE.Clock();
 // * * Animations
+
+// * * Add elements to GUI
+const cubeFolder = gui.addFolder("Cube");
+cubeFolder.add(mesh.position, "y", -10, 10, 0.01);
+cubeFolder.add(mesh.position, "x", -10, 10, 0.01);
+cubeFolder.add(mesh.position, "z").min(-10).max(10).step(0.01);
+cubeFolder.add(mesh, "visible");
+cubeFolder.add(material, "wireframe");
+cubeFolder.addColor(parameters, "color").onChange(() => {
+  material.color.set(parameters.color);
+});
+cubeFolder.add(parameters, "spin");
+gui.add(parameters, "spinCamera");
+// cubeFolder.addColor(mesh.color, "#ddd1a7");
+cubeFolder.open();
 
 const tick = () => {
   //
