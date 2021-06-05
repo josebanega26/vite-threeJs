@@ -3,13 +3,48 @@ import * as THREE from "three";
 import * as dat from "dat.gui";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
 import gsap from "gsap";
+import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader.js";
 const { PI } = Math;
 
-// * * Create GUI
+// * * Texture
+const loadingManager = new THREE.LoadingManager();
+const textureLoader = new THREE.TextureLoader(loadingManager);
 
+// * * Loading
+loadingManager.onStart = () => {
+  console.log("onStart");
+};
+loadingManager.onLoad = () => {
+  console.log("on progress");
+};
+loadingManager.onProgress = (event) => {
+  console.log(`on progress`);
+};
+
+const colorTexture = textureLoader.load("/static/textures/door/color.jpg");
+const alphaTexture = textureLoader.load("/static/textures/door/alpha.jpg");
+const metallicTexture = textureLoader.load(
+  "/static/textures/door/metallic.jpg"
+);
+const heightTexture = textureLoader.load("/static/textures/door/height.png");
+const normalTexture = textureLoader.load("/static/textures/door/normal.jpg");
+
+const triangleTexture = textureLoader.load(
+  "/static/textures/door/redTriangle.jpg"
+);
+
+triangleTexture.rotation = PI * -0.25;
+
+// ** Native version
+// img.onload = () => {
+//   console.log("img loaded");
+//   colorTexture.needsUpdate = true;
+// };
+
+// * * Create GUI
 const gui = new dat.GUI();
 const parameters = {
-  color: 0xddd1a7,
+  color: 0xfffdfd,
   spin: () => {
     gsap.to(mesh.rotation, { duration: 2, y: mesh.rotation.y + PI * 2 });
   },
@@ -82,6 +117,7 @@ const geometry = new THREE.BoxGeometry(1, 1, 1);
 
 const material = new THREE.MeshBasicMaterial({
   color: parameters.color,
+  map: triangleTexture,
   // wireframe: true,
 });
 const mesh = new THREE.Mesh(geometry, material);
@@ -89,7 +125,7 @@ const mesh = new THREE.Mesh(geometry, material);
 // ** Add Scene
 
 scene.add(mesh);
-mesh.ma;
+
 const axesHelper = new THREE.AxesHelper(20);
 scene.add(axesHelper);
 
@@ -129,6 +165,7 @@ cubeFolder.addColor(parameters, "color").onChange(() => {
 });
 cubeFolder.add(parameters, "spin");
 gui.add(parameters, "spinCamera");
+gui.add(axesHelper, "visible").name("axes helper");
 // cubeFolder.addColor(mesh.color, "#ddd1a7");
 cubeFolder.open();
 
